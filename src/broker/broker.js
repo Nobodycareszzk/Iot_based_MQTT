@@ -1,8 +1,9 @@
 const mosca = require("mosca");
+const config = require("../config/config");
 
 const MqttServer = new mosca.Server({
-  port: 1883,
-  id: "ZZK",
+  port: config.MQTT_PORT,
+  id: config.BROKER_ID,
 });
 
 // 监听客户端连接事件
