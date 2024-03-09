@@ -19,7 +19,9 @@ MqttServer.on("clientDisconnected", (client) => {
 // 监听 MQTT 消息发布事件
 MqttServer.on("published", (packet, client) => {
   console.log(
-    `Published: topic: ${packet.topic} || message: ${packet.payload.toString()}`
+    `Published: ${packet.topic} ||  ${packet.payload.toString()} ${
+      client ? "from " + client.id : "no client info"
+    }`
   );
 });
 

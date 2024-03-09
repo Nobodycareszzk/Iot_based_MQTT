@@ -1,6 +1,6 @@
 const MQTT_PORT = 9000;
 const BROKER_ID = "ZZK";
-const URL = `mqtt://localhost:${PORT}`;
+const URL = `mqtt://localhost:${MQTT_PORT}`;
 const SERVICE_OPTIONS = {
   clientId: "service",
 };
