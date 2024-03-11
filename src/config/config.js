@@ -5,9 +5,12 @@ const SERVICE_OPTIONS = {
   clientId: "service",
 };
 
+const SECRET_KEY = "zzk";
+
 module.exports = {
   MQTT_PORT,
   BROKER_ID,
   URL,
   SERVICE_OPTIONS,
+  SECRET_KEY,
 };

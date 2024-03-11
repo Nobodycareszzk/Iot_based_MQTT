@@ -18,6 +18,9 @@ MqttServer.on("clientDisconnected", (client) => {
 
 // 监听 MQTT 消息发布事件
 MqttServer.on("published", (packet, client) => {
+  if (packet.topic.startsWith("$SYS/ZZK/")) {
+    return;
+  }
   console.log(
     `Published: ${packet.topic} ||  ${packet.payload.toString()} ${
       client ? "from " + client.id : "no client info"
