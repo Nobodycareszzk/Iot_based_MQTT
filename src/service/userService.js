@@ -1,4 +1,4 @@
-const connection = require("../utils/database");
+const connection = require("../utils/databaseConnect");
 
 // 添加用户的函数
 async function addUser(username, password, phone, email) {
@@ -21,13 +21,16 @@ async function addUser(username, password, phone, email) {
     throw error;
   }
 }
+
 // 根据用户名查询用户的函数
 async function getUserByUsername(username) {
   const statement = "SELECT * FROM user WHERE username = ?";
   try {
     // 执行预处理语句查询用户
     const [result] = await connection.execute(statement, [username]);
-
+    if (result.length === 0) {
+      return -1;
+    }
     // 返回查询结果（可能为空）
     return result;
   } catch (error) {
@@ -49,7 +52,9 @@ async function updateUserInfo(username, password, phone, email) {
       email,
       username,
     ]);
-
+    if (result.affectedRows === 0) {
+      return -1;
+    }
     // 返回修改的用户ID
     return result.insertId;
   } catch (error) {
@@ -64,8 +69,10 @@ async function deleteUser(username) {
   const statement = "DELETE FROM user WHERE username = ?";
   try {
     // 执行预处理语句删除用户
-    const [result] = await pool.execute(statement, [username]);
-
+    const [result] = await connection.execute(statement, [username]);
+    if (result.affectedRows === 0) {
+      return -1;
+    }
     // 返回删除的用户ID
     return result.insertId;
   } catch (error) {
