@@ -4,7 +4,8 @@ const connection = require("../utils/databaseConnect");
 async function addDevice(userId, deviceName, productId) {
   try {
     // 获取当前时间
-    const createTime = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const createTime =
+      new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
     const deviceStatus = 0;
     // 执行预处理语句添加设备
     const statement =

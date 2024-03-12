@@ -8,6 +8,7 @@ const {
   addDeviceInfo,
   changeDeviceCurStatus,
   getAllDevicesInfo,
+  getDeviceData,
 } = require("../controllers/devicesController");
 
 const deviceRouter = express.Router();
@@ -19,5 +20,6 @@ deviceRouter.post("/delete", deleteDeviceInfo);
 deviceRouter.post("/update", updateDeviceInfo);
 deviceRouter.post("/add", addDeviceInfo);
 deviceRouter.post("/logchange", changeDeviceCurStatus);
+deviceRouter.get("/data/:deviceId", getDeviceData);
 
 module.exports = deviceRouter;

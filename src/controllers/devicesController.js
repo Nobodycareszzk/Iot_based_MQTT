@@ -9,6 +9,8 @@ const {
   getAllDevices,
 } = require("../service/deviceService");
 
+const { showData } = require("../service/dataService");
+
 async function getDeviceInfo(req, res, next) {
   const { userId, deviceId } = req.params;
   try {
@@ -85,6 +87,16 @@ async function getAllDevicesInfo(req, res, next) {
   }
 }
 
+async function getDeviceData(req, res, next) {
+  const { deviceId } = req.params;
+  try {
+    const result = await showData(deviceId);
+    res.json(createResBody(2000, "获取成功", result));
+  } catch (error) {
+    res.json(createResBody(-2001, "获取失败", error));
+  }
+}
+
 module.exports = {
   getDeviceInfo,
   deleteDeviceInfo,
@@ -93,4 +105,5 @@ module.exports = {
   addDeviceInfo,
   changeDeviceCurStatus,
   getAllDevicesInfo,
+  getDeviceData,
 };
