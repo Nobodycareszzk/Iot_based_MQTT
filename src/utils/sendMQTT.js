@@ -1,7 +1,8 @@
 const mqtt = require("mqtt");
+const createResBody = require("./resBody");
 
 // 用于发送MQTT请求并获取信息后传递给客户端
-function sendMQTT(pubTopic, subTopic, message, res, userId) {
+async function sendMQTT(pubTopic, subTopic, message, res, userId) {
   const client = mqtt.connect("mqtt://localhost:9000", { clientId: userId });
   client.publish(pubTopic, message, (err) => {
     if (err) {
@@ -17,7 +18,8 @@ function sendMQTT(pubTopic, subTopic, message, res, userId) {
   });
   client.on("message", (topic, message) => {
     if (topic === subTopic) {
-      res.json(message);
+      console.log("Service 收到信息", message.toString());
+      res.json(createResBody(200, "操作成功", message.toString()));
     }
     client.end();
   });
