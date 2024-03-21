@@ -5,6 +5,9 @@ const deviceRouter = require("./routers/device");
 const topicRouter = require("./routers/topic");
 const groupRouter = require("./routers/group");
 const communicateRouter = require("./routers/communicate");
+// 导入的时候所有代码都会被执行一次
+require("./broker/broker");
+require("./client/client");
 const cors = require("cors");
 
 const app = express();

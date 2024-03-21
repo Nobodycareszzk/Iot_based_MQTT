@@ -2,7 +2,7 @@ const mqtt = require("mqtt");
 const config = require("../config/config");
 
 // 连接到本地 MQTT 服务器
-const MQTTclient = mqtt.connect(config.URL, config.SERVICE_OPTIONS);
+const serviceClient = mqtt.connect(config.URL, config.SERVICE_OPTIONS);
 
 function subscribeToTopic(client, ...topics) {
   topics.forEach((topic) => {
@@ -15,13 +15,13 @@ function subscribeToTopic(client, ...topics) {
 }
 
 // 监听连接事件
-MQTTclient.on("connect", () => {
+serviceClient.on("connect", () => {
   console.log("Service Connected to MQTT broker");
   // 订阅系统默认的主题 用于测试
-  subscribeToTopic(MQTTclient, "$SYS/ZZK/#");
+  subscribeToTopic(serviceClient, "$SYS/ZZK/#");
 
   // 监听消息到达事件
-  MQTTclient.on("message", (topic, message) => {
+  serviceClient.on("message", (topic, message) => {
     if (topic.startsWith("$SYS/ZZK/")) {
       handleSystemMessage(topic, message);
     } else {
