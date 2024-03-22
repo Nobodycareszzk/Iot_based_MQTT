@@ -37,7 +37,15 @@ async function addDevice(userId, deviceName, deviceType) {
  * @returns
  */
 async function getDeviceList(userId) {
-  const statement = "SELECT * FROM device WHERE deviceId IN (SELECT deviceId FROM user_device WHERE userId = ?)";
+  const statement = `SELECT device.*, device_product.*
+      FROM device
+      INNER JOIN device_product ON device.deviceId = device_product.deviceId
+      WHERE device.deviceId IN (
+          SELECT deviceId
+          FROM user_device
+          WHERE userId = ?
+      );
+`;
   try {
     const [result] = await connection.execute(statement, [userId]);
     return result;
@@ -55,7 +63,10 @@ async function getDeviceList(userId) {
  */
 // 查询单个设备信息
 async function getDeviceInfo(deviceId) {
-  const statement = "SELECT * FROM device WHERE deviceId = ?";
+  const statement = `SELECT device.*, device_product.*
+    FROM device
+  JOIN device_product ON device.deviceId = device_product.deviceId
+  WHERE device.deviceId = ?;`;
   try {
     // 执行预处理语句查询设备
     const [result] = await connection.execute(statement, [deviceId]);

@@ -6,6 +6,7 @@ const {
   getDeviceInfoById,
   deleteDeviceInfoById,
   updateDeviceInfoById,
+  selectProductForDeviceById,
 } = require("../controllers/devicesController");
 
 const { verifyToken } = require("../middleware/loginMiddleware");
@@ -20,6 +21,7 @@ deviceRouter.post("/add", verifyToken, addDeviceByName);
 deviceRouter.get("/search/:deviceId", deviceMiddleware, getDeviceInfoById);
 deviceRouter.delete("/delete/:deviceId", deviceMiddleware, deleteDeviceInfoById);
 deviceRouter.post("/update/", deviceMiddleware, updateDeviceInfoById);
+deviceRouter.post("/select", deviceMiddleware, selectProductForDeviceById);
 
 // deviceRouter.get("/:userId/status/:deviceId", getDeviceCurStatus);
 

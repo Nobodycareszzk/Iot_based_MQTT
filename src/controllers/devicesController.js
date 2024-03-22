@@ -1,5 +1,12 @@
 const createResBody = require("../utils/resBody");
-const { getDeviceList, getDeviceInfo, addDevice, deleteDevice, updateDeviceInfo } = require("../service/deviceService");
+const {
+  getDeviceList,
+  getDeviceInfo,
+  addDevice,
+  deleteDevice,
+  updateDeviceInfo,
+  selectProduct,
+} = require("../service/deviceService");
 
 const { showData } = require("../service/dataService");
 
@@ -64,6 +71,18 @@ async function updateDeviceInfoById(req, res, next) {
   }
 }
 
+async function selectProductForDeviceById(req, res, next) {
+  const { deviceId, productId } = req.body;
+  try {
+    const result = await selectProduct(deviceId, productId);
+    console.log("selectProduct", result);
+    const data = { deviceId: deviceId, productId: productId };
+    res.json(createResBody(2000, "添加成功", data));
+  } catch (error) {
+    res.json(createResBody(-2001, "添加失败", error));
+  }
+}
+
 // async function getDeviceCurStatus(req, res, next) {
 //   const { userId, deviceId } = req.params;
 //   try {
@@ -102,4 +121,5 @@ module.exports = {
   getDeviceInfoById,
   deleteDeviceInfoById,
   updateDeviceInfoById,
+  selectProductForDeviceById,
 };
