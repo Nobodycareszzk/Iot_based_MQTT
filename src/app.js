@@ -6,19 +6,19 @@ const topicRouter = require("./routers/topic");
 const groupRouter = require("./routers/group");
 const communicateRouter = require("./routers/communicate");
 // 导入的时候所有代码都会被执行一次
-require("./broker/broker");
-require("./client/client");
+// require("./broker/broker");
+// require("./client/client");
 const cors = require("cors");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(loginRouter);
-app.use("/user", userRouter);
+// app.use("/user", userRouter);
 app.use("/device", deviceRouter);
-app.use("/topic", topicRouter);
-app.use("/group", groupRouter);
-app.use("/communicate", communicateRouter);
+// app.use("/topic", topicRouter);
+// app.use("/group", groupRouter);
+// app.use("/communicate", communicateRouter);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

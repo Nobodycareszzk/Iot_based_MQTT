@@ -18,4 +18,14 @@ async function updateUserInfo(req, res, next) {
   }
 }
 
-module.exports = { updateUserInfo };
+async function getAllUsers(req, res, next) {
+  try {
+    const result = await userService.getAllUsers();
+    res.json(createResBody(2000, "查询所有用户成功", result));
+  } catch (error) {
+    console.log("getAllUsers", error);
+    res.json(createResBody(-2002, "查询所有用户失败"));
+  }
+}
+
+module.exports = { updateUserInfo, getAllUsers };

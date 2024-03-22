@@ -11,8 +11,8 @@ const {
 const topicRouter = express.Router();
 
 topicRouter.post("/add", addTopicInfo);
-topicRouter.post("/delete", deleteTopicInfo);
-topicRouter.get("/:userId/search", getAllTopicsInfo);
+topicRouter.delete("/delete/topicId:", deleteTopicInfo);
+topicRouter.get("/search", getAllTopicsInfo);
 topicRouter.post("/addDevice", addTopicForDevice);
 topicRouter.post("/removeDevice", removeTopicForDevice);
 topicRouter.get("/search/:deviceId", getDeviceTopicsInfo);

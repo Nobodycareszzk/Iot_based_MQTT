@@ -1,28 +1,28 @@
 const connection = require("../utils/databaseConnect");
 
 // 添加设备
-async function addDevice(userId, deviceName, productId) {
+/**
+ * 1. 添加设备至设备表(deviceName,deviceType)
+ * 2. 添加设备至用户设备表(userId,deviceId)
+ * @param {number} userId
+ * @param {string} deviceName
+ * @param {string} devciceType
+ * @returns 返回插入的设备ID
+ */
+async function addDevice(userId, deviceName, deviceType) {
   try {
     // 获取当前时间
-    const createTime =
-      new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
-    const deviceStatus = 0;
     // 执行预处理语句添加设备
-    const statement =
-      "INSERT INTO device (userId, deviceName, productId, deviceStatus, createTime) VALUES (?, ?, ?, ?, ?)";
-    const [result] = await connection.execute(statement, [
-      userId,
-      deviceName,
-      productId,
-      deviceStatus,
-      createTime,
-    ]);
-    if (result.affectedRows === 0) {
+    const statementDevice = "INSERT INTO device (deviceName, deviceType) VALUES (?, ?)";
+    const statementUserDevice = `INSERT INTO user_device (userId, deviceId) VALUES (?, ?)`;
+    const [resultDevice] = await connection.execute(statementDevice, [deviceName, deviceType]);
+    const [resultUserDevice] = await connection.execute(statementUserDevice, [userId, resultDevice.insertId]);
+
+    if (resultDevice.affectedRows === 0 || resultUserDevice.affectedRows === 0) {
       throw new Error("Device insert failed");
     }
-
     // 返回插入的设备ID
-    return result.insertId;
+    return resultDevice.insertId;
   } catch (error) {
     // 处理错误
     console.error("Error adding device:", error);
@@ -30,59 +30,35 @@ async function addDevice(userId, deviceName, productId) {
   }
 }
 
-// 删除设备的函数
-async function deleteDevice(userId, deviceId) {
+// 查询当前用户的所有设备
+/**
+ *
+ * @param {*} userId
+ * @returns
+ */
+async function getDeviceList(userId) {
+  const statement = "SELECT * FROM device WHERE deviceId IN (SELECT deviceId FROM user_device WHERE userId = ?)";
   try {
-    // 执行预处理语句删除设备
-    const statement = "DELETE FROM device WHERE deviceId = ? AND userId = ?";
-    const [result] = await connection.execute(statement, [deviceId, userId]);
-    if (result.affectedRows === 0) {
-      throw new Error("Device not found");
-    }
-
-    // 返回受影响的行数
-    return result.affectedRows;
+    const [result] = await connection.execute(statement, [userId]);
+    return result;
   } catch (error) {
-    // 处理错误
-    console.error("Error deleting device:", error);
+    console.error("Error fetching devices:", error);
     throw error;
   }
 }
 
-//更新设备信息的函数
-async function updateDevice(userId, deviceId, deviceName, productId) {
-  try {
-    const curStatus = await getDeviceStatus(userId, deviceId);
-    // 执行预处理语句更新设备信息
-    const statement =
-      "UPDATE device SET deviceName = ?, productId = ?, deviceStatus = ? WHERE userId = ? AND deviceId = ?";
-    const [result] = await connection.execute(statement, [
-      deviceName,
-      productId,
-      curStatus,
-      userId,
-      deviceId,
-    ]);
-    if (result.affectedRows === 0) {
-      throw new Error("Device not found");
-    }
-    // 返回设备的用户ID
-    return result.insertId;
-  } catch (error) {
-    // 处理错误
-    console.error("Error updating device:", error);
-    throw error;
-  }
-}
-
+/**
+ *
+ * @param {*} userId
+ * @param {*} deviceId
+ * @returns
+ */
 // 查询单个设备信息
-async function getDevice(userId, deviceId) {
+async function getDeviceInfo(deviceId) {
+  const statement = "SELECT * FROM device WHERE deviceId = ?";
   try {
     // 执行预处理语句查询设备
-    const [result] = await connection.execute(
-      "SELECT * FROM device WHERE userId = ? AND deviceId = ?",
-      [userId, deviceId]
-    );
+    const [result] = await connection.execute(statement, [deviceId]);
     if (result.length === 0) {
       throw new Error("Device not found");
     }
@@ -96,15 +72,67 @@ async function getDevice(userId, deviceId) {
   }
 }
 
+// 删除设备的函数
+async function deleteDevice(userId, deviceId) {
+  try {
+    // await connection.beginTransaction();
+
+    // 删除 user_device 表中的记录
+    const deleteStatement = "DELETE FROM user_device WHERE userId = ? AND deviceId = ?";
+    const [resultUserDevice] = await connection.execute(deleteStatement, [userId, deviceId]);
+    // 删除 device 表中的记录
+    const deleteDeviceStatement = "DELETE FROM device WHERE deviceId = ?";
+    const [resultDevice] = await connection.execute(deleteDeviceStatement, [deviceId]);
+    if (resultUserDevice.affectedRows === 0 || resultDevice.affectedRows === 0) {
+      return new Error("Device delete failed");
+    }
+  } catch (error) {
+    console.error("删除设备失败:", error);
+    throw error;
+  }
+}
+
+// 更新设备信息的函数
+async function updateDeviceInfo(deviceId, deviceName, deviceType) {
+  try {
+    // 更新 device 表中的设备信息
+    const updateStatement = "UPDATE device SET deviceName = ?, deviceType = ? WHERE deviceId = ?";
+    const [result] = await connection.execute(updateStatement, [deviceName, deviceType, deviceId]);
+    if (result.affectedRows === 0) {
+      return new Error("Device update failed");
+    }
+  } catch (error) {
+    console.error("设备信息更新失败:", error);
+    throw error;
+  }
+}
+
+// 为设备选择产品
+async function selectProduct(deviceId, productId) {
+  const statement = "INSERT INTO device_product (deviceId, productId) VALUES (?, ?)";
+  try {
+    const [result] = await connection.execute(statement, [deviceId, productId]);
+
+    if (result.affectedRows < 0) {
+      throw new Error("Product selection failed");
+    }
+    return result.insertId;
+  } catch (error) {
+    console.error("Error selecting product for device:", error);
+    throw error;
+  }
+}
+
 // 修改设备当前状态
 async function changeDeviceStatus(userId, deviceId) {
   try {
     const curStatus = await getDeviceStatus(userId, deviceId);
     const newStatus = curStatus === 0 ? 1 : 0;
-    const [result] = await connection.execute(
-      "UPDATE device SET deviceStatus = ? WHERE userId = ? AND deviceId = ?",
-      [newStatus, userId, deviceId]
-    );
+    const [result] = await connection.execute("UPDATE device SET deviceStatus = ? WHERE userId = ? AND deviceId = ?", [
+      newStatus,
+      userId,
+      deviceId,
+    ]);
 
     if (result.affectedRows < 0) {
       throw new Error("Status change failed");
@@ -116,46 +144,11 @@ async function changeDeviceStatus(userId, deviceId) {
   }
 }
 
-// 查询设备当前状态
-async function getDeviceStatus(userId, deviceId) {
-  try {
-    const [result] = await connection.execute(
-      "SELECT deviceStatus FROM device WHERE userId = ? AND deviceId = ?",
-      [userId, deviceId]
-    );
-
-    if (result.length === 0) {
-      throw new Error("Device not found");
-    }
-
-    console.log("数据库查询:", result[0].deviceStatus);
-    return result[0].deviceStatus;
-  } catch (error) {
-    console.error("Error fetching device status:", error);
-    throw error;
-  }
-}
-
-// 查询当前用户的所有设备
-async function getAllDevices(userId) {
-  try {
-    const [result] = await connection.execute(
-      "SELECT * FROM device WHERE userId = ?",
-      [userId]
-    );
-    return result;
-  } catch (error) {
-    console.error("Error fetching devices:", error);
-    throw error;
-  }
-}
-
 module.exports = {
-  getDevice,
-  updateDevice,
-  deleteDevice,
+  getDeviceList,
+  getDeviceInfo,
   addDevice,
-  getDeviceStatus,
-  changeDeviceStatus,
-  getAllDevices,
+  deleteDevice,
+  updateDeviceInfo,
+  selectProduct,
 };

@@ -12,7 +12,7 @@ const groupRouter = express.Router();
 
 groupRouter.post("/add", addGroupInfo);
 groupRouter.post("/delete", deleteGroupInfo);
-groupRouter.get("/:userId/search", getAllGroupsInfo);
+groupRouter.get("/search", getAllGroupsInfo);
 groupRouter.post("/addDevice", addDeviceInGroup);
 groupRouter.post("/removeDevice", removeDeviceOutGroup);
 groupRouter.get("/search/:groupId", getAllDevicesInGroupInfo);

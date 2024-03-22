@@ -2,19 +2,26 @@ const connection = require("../utils/databaseConnect");
 
 // 添加用户的函数
 async function addUser(username, password, phone, email) {
-  const statement =
+  const statementUser =
     "INSERT INTO user (username, password, phone, email) VALUES (?, ?, ?, ?)";
+  const statementRole = "INSERT INTO user_role (userId, roleId) VALUES (?, ?)";
+  const statementPermission =
+    "INSERT INTO role_permission (roleId, permissionName) VALUES (?, ?)";
   try {
     // 执行预处理语句添加用户
-    const [result] = await connection.execute(statement, [
+    const [resultUser] = await connection.execute(statementUser, [
       username,
       password,
       phone,
       email,
     ]);
+    const [resultRole] = await connection.execute(statementRole, [
+      resultUser.insertId,
+      1,
+    ]);
 
     // 返回插入的用户ID
-    return result.insertId;
+    return resultUser.insertId;
   } catch (error) {
     // 处理错误
     console.error("Error adding user:", error);
@@ -82,9 +89,25 @@ async function deleteUser(username) {
   }
 }
 
+// 查询所有用户的函数
+async function getAllUsers() {
+  const statement = "SELECT * FROM user";
+  try {
+    // 执行预处理语句查询所有用户
+    const [result] = await connection.execute(statement);
+    // 返回查询结果（可能为空）
+    return result;
+  } catch (error) {
+    // 处理错误
+    console.error("Error fetching all users:", error);
+    throw error;
+  }
+}
+
 module.exports = {
   addUser,
   getUserByUsername,
   updateUserInfo,
   deleteUser,
+  getAllUsers,
 };

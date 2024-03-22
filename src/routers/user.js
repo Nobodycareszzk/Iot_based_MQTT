@@ -1,8 +1,12 @@
 const express = require("express");
 const { verifyToken, verifyLogin } = require("../middleware/loginMiddleware");
-const { updateUserInfo } = require("../controllers/userController");
+const {
+  updateUserInfo,
+  getAllUsers,
+} = require("../controllers/userController");
 const userRouter = express.Router();
 
 userRouter.post("/update", verifyLogin, verifyToken, updateUserInfo);
+userRouter.get("/all", verifyToken, getAllUsers);
 
 module.exports = userRouter;

@@ -1,109 +1,105 @@
 const createResBody = require("../utils/resBody");
-const {
-  getDevice,
-  updateDevice,
-  deleteDevice,
-  addDevice,
-  getDeviceStatus,
-  changeDeviceStatus,
-  getAllDevices,
-} = require("../service/deviceService");
+const { getDeviceList, getDeviceInfo, addDevice, deleteDevice, updateDeviceInfo } = require("../service/deviceService");
 
 const { showData } = require("../service/dataService");
 
-async function getDeviceInfo(req, res, next) {
-  const { userId, deviceId } = req.params;
+async function getDeviceListInfo(req, res, next) {
+  const userId = res.locals.user.id;
   try {
-    const result = await getDevice(userId, deviceId);
-    console.log("getDeviceInfo", result);
-    res.json(result);
+    const result = await getDeviceList(userId);
+    res.json(createResBody(2000, "获取成功", result));
   } catch (error) {
-    res.json(createResBody(-2001, "获取失败", error));
+    res.json(createResBody(-2002, "获取失败", error));
   }
 }
 
-async function deleteDeviceInfo(req, res, next) {
-  const { userId, deviceId } = req.body;
+async function addDeviceByName(req, res, next) {
+  const { deviceName, deviceType } = req.body;
+  const userId = res.locals.user.id;
   try {
-    const result = await deleteDevice(userId, deviceId);
-    console.log("deleteDeviceInfo", result);
-    res.json(createResBody(2000, "删除成功"));
-  } catch (error) {
-    res.json(createResBody(-2001, "删除失败", error));
-  }
-}
-
-async function addDeviceInfo(req, res, next) {
-  const { userId, deviceName, productId } = req.body;
-  try {
-    const result = await addDevice(userId, deviceName, productId);
+    const result = await addDevice(userId, deviceName, deviceType);
     console.log("addDeviceInfo", result);
-    res.json(createResBody(2000, "添加成功", result));
+    const data = { deviceId: result };
+    res.json(createResBody(2000, "添加成功", data));
   } catch (error) {
-    res.json(createResBody(-2001, "添加失败", error));
+    res.json(createResBody(-2003, "添加失败", error));
   }
 }
 
-async function updateDeviceInfo(req, res, next) {
-  const { userId, deviceId, deviceName, productId } = req.body;
-  try {
-    const result = await updateDevice(userId, deviceId, deviceName, productId);
-    console.log("updateDeviceInfo", result);
-    res.json(createResBody(2000, "更新成功", result));
-  } catch (error) {
-    res.json(createResBody(-2001, "更新失败", error));
-  }
-}
-
-async function getDeviceCurStatus(req, res, next) {
-  const { userId, deviceId } = req.params;
-  try {
-    const result = await getDeviceStatus(userId, deviceId);
-    console.log("getDeviceCurStatus", result);
-    res.json(createResBody(2000, "获取成功", result));
-  } catch (error) {
-    res.json(createResBody(-2001, "获取失败", error));
-  }
-}
-
-async function changeDeviceCurStatus(req, res, next) {
-  const { userId, deviceId } = req.body;
-  try {
-    const result = await changeDeviceStatus(userId, deviceId);
-    console.log("changeDeviceCurStatus", result);
-    res.json(createResBody(2000, "更新成功", result));
-  } catch (error) {
-    res.json(createResBody(-2001, "更新失败", error));
-  }
-}
-
-async function getAllDevicesInfo(req, res, next) {
-  const { userId } = req.params;
-  try {
-    const result = await getAllDevices(userId);
-    res.json(createResBody(2000, "获取成功", result));
-  } catch (error) {
-    res.json(createResBody(-2001, "获取失败", error));
-  }
-}
-
-async function getDeviceData(req, res, next) {
+async function getDeviceInfoById(req, res, next) {
   const { deviceId } = req.params;
+
   try {
-    const result = await showData(deviceId);
+    const result = await getDeviceInfo(deviceId);
+    console.log("getDeviceInfo", result);
     res.json(createResBody(2000, "获取成功", result));
   } catch (error) {
-    res.json(createResBody(-2001, "获取失败", error));
+    res.json(createResBody(-2002, "获取失败", error));
   }
 }
+
+async function deleteDeviceInfoById(req, res, next) {
+  const { deviceId } = req.params;
+  const userId = res.locals.user.id;
+  try {
+    await deleteDevice(userId, deviceId);
+
+    const data = { deviceId: deviceId };
+    res.json(createResBody(2000, "删除成功", data));
+  } catch (error) {
+    console.log("deleteDeviceInfo", error);
+    res.json(createResBody(-2004, "删除失败", error));
+  }
+}
+
+async function updateDeviceInfoById(req, res, next) {
+  const { deviceId, deviceName, deviceType } = req.body;
+
+  try {
+    await updateDeviceInfo(deviceId, deviceName, deviceType);
+    const data = { deviceId: deviceId, deviceName: deviceName, deviceType: deviceType };
+    res.json(createResBody(2000, "更新成功", data));
+  } catch (error) {
+    res.json(createResBody(-2005, "更新失败", error));
+  }
+}
+
+// async function getDeviceCurStatus(req, res, next) {
+//   const { userId, deviceId } = req.params;
+//   try {
+//     const result = await getDeviceStatus(userId, deviceId);
+//     console.log("getDeviceCurStatus", result);
+//     res.json(createResBody(2000, "获取成功", result));
+//   } catch (error) {
+//     res.json(createResBody(-2001, "获取失败", error));
+//   }
+// }
+
+// async function changeDeviceCurStatus(req, res, next) {
+//   const { userId, deviceId } = req.body;
+//   try {
+//     const result = await changeDeviceStatus(userId, deviceId);
+//     console.log("changeDeviceCurStatus", result);
+//     res.json(createResBody(2000, "更新成功", result));
+//   } catch (error) {
+//     res.json(createResBody(-2001, "更新失败", error));
+//   }
+// }
+
+// async function getDeviceData(req, res, next) {
+//   const { deviceId } = req.params;
+//   try {
+//     const result = await showData(deviceId);
+//     res.json(createResBody(2000, "获取成功", result));
+//   } catch (error) {
+//     res.json(createResBody(-2001, "获取失败", error));
+//   }
+// }
 
 module.exports = {
-  getDeviceInfo,
-  deleteDeviceInfo,
-  getDeviceCurStatus,
-  updateDeviceInfo,
-  addDeviceInfo,
-  changeDeviceCurStatus,
-  getAllDevicesInfo,
-  getDeviceData,
+  getDeviceListInfo,
+  addDeviceByName,
+  getDeviceInfoById,
+  deleteDeviceInfoById,
+  updateDeviceInfoById,
 };

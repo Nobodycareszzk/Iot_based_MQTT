@@ -1,25 +1,29 @@
 // 设备控制路由
 const express = require("express");
 const {
-  getDeviceInfo,
-  deleteDeviceInfo,
-  getDeviceCurStatus,
-  updateDeviceInfo,
-  addDeviceInfo,
-  changeDeviceCurStatus,
-  getAllDevicesInfo,
-  getDeviceData,
+  getDeviceListInfo,
+  addDeviceByName,
+  getDeviceInfoById,
+  deleteDeviceInfoById,
+  updateDeviceInfoById,
 } = require("../controllers/devicesController");
+
+const { verifyToken } = require("../middleware/loginMiddleware");
+const { hasDevice } = require("../middleware/deviceMiddlware");
 
 const deviceRouter = express.Router();
 
-deviceRouter.get("/:userId/search", getAllDevicesInfo);
-deviceRouter.get("/:userId/search/:deviceId", getDeviceInfo);
-deviceRouter.get("/:userId/status/:deviceId", getDeviceCurStatus);
-deviceRouter.post("/delete", deleteDeviceInfo);
-deviceRouter.post("/update", updateDeviceInfo);
-deviceRouter.post("/add", addDeviceInfo);
-deviceRouter.post("/logchange", changeDeviceCurStatus);
-deviceRouter.get("/data/:deviceId", getDeviceData);
+const deviceMiddleware = [verifyToken, hasDevice];
+
+deviceRouter.get("/search/list", verifyToken, getDeviceListInfo);
+deviceRouter.post("/add", verifyToken, addDeviceByName);
+deviceRouter.get("/search/:deviceId", deviceMiddleware, getDeviceInfoById);
+deviceRouter.delete("/delete/:deviceId", deviceMiddleware, deleteDeviceInfoById);
+deviceRouter.post("/update/", deviceMiddleware, updateDeviceInfoById);
+
+// deviceRouter.get("/:userId/status/:deviceId", getDeviceCurStatus);
+
+// deviceRouter.post("/logchange", changeDeviceCurStatus);
+// deviceRouter.get("/data/:deviceId", getDeviceData);
 
 module.exports = deviceRouter;
