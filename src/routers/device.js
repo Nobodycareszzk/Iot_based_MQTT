@@ -16,9 +16,9 @@ const deviceRouter = express.Router();
 
 const deviceMiddleware = [verifyToken, hasDevice];
 
-deviceRouter.get("/search/list", verifyToken, getDeviceListInfo);
-deviceRouter.post("/add", verifyToken, addDeviceByName);
-deviceRouter.get("/search/:deviceId", deviceMiddleware, getDeviceInfoById);
+deviceRouter.get("/query/list", verifyToken, getDeviceListInfo);
+deviceRouter.post("/create", verifyToken, addDeviceByName);
+deviceRouter.get("/query/:deviceId", deviceMiddleware, getDeviceInfoById);
 deviceRouter.delete("/delete/:deviceId", deviceMiddleware, deleteDeviceInfoById);
 deviceRouter.post("/update/", deviceMiddleware, updateDeviceInfoById);
 deviceRouter.post("/select", deviceMiddleware, selectProductForDeviceById);
