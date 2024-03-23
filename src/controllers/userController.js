@@ -4,12 +4,7 @@ const userService = require("../service/userService");
 async function updateUserInfo(req, res, next) {
   const { username, password, phone, email } = req.body;
   try {
-    const result = await userService.updateUserInfo(
-      username,
-      password,
-      phone,
-      email
-    );
+    const result = await userService.updateUserInfo(username, password, phone, email);
     console.log("数据库修改返回：", result);
     res.json(createResBody(2000, "用户信息修改成功"));
   } catch (error) {
@@ -19,8 +14,10 @@ async function updateUserInfo(req, res, next) {
 }
 
 async function getAllUsers(req, res, next) {
+  const { page = "1", pageSize = "10" } = req.query;
+
   try {
-    const result = await userService.getAllUsers();
+    const result = await userService.getAllUsers(page, pageSize);
     res.json(createResBody(2000, "查询所有用户成功", result));
   } catch (error) {
     console.log("getAllUsers", error);

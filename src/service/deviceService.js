@@ -36,18 +36,22 @@ async function addDevice(userId, deviceName, deviceType) {
  * @param {*} userId
  * @returns
  */
-async function getDeviceList(userId) {
+async function getDeviceList(userId, page, pageSize) {
+  const startIndex = (page - 1) * pageSize;
+
   const statement = `SELECT device.*, device_product.*
-      FROM device
-      INNER JOIN device_product ON device.deviceId = device_product.deviceId
-      WHERE device.deviceId IN (
-          SELECT deviceId
-          FROM user_device
-          WHERE userId = ?
-      );
+  FROM device
+  INNER JOIN device_product ON device.deviceId = device_product.deviceId
+  WHERE device.deviceId IN (
+    SELECT deviceId
+    FROM user_device
+    WHERE userId = ?
+  )
+  LIMIT ?, ?;
 `;
+
   try {
-    const [result] = await connection.execute(statement, [userId]);
+    const [result] = await connection.execute(statement, [userId, String(startIndex), pageSize]);
     return result;
   } catch (error) {
     console.error("Error fetching devices:", error);

@@ -16,7 +16,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(loginRouter);
-// app.use("/user", userRouter);
+app.use("/user", userRouter);
 app.use("/device", deviceRouter);
 app.use(menuRouter);
 app.use(permissionRouter);
