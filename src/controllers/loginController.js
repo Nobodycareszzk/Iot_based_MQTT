@@ -6,11 +6,11 @@ function signToken(req, res, next) {
   const user = res.locals.user;
 
   const payload = { username: user.username, id: user.id };
-  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "30m" });
+  const accessToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "7d" });
   const refreshToken = jwt.sign(payload, SECRET_KEY, { expiresIn: "7d" });
   res.json(
     createResBody(2000, "登录成功", {
-      payload,
+      ...payload,
       accessToken,
       refreshToken,
     })

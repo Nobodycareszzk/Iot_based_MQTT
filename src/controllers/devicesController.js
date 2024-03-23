@@ -14,7 +14,8 @@ async function getDeviceListInfo(req, res, next) {
   const userId = res.locals.user.id;
   try {
     const result = await getDeviceList(userId);
-    res.json(createResBody(2000, "获取成功", result));
+    const data = { devices: result, total: result.length };
+    res.json(createResBody(2000, "获取成功", data));
   } catch (error) {
     res.json(createResBody(-2002, "获取失败", error));
   }

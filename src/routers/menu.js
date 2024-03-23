@@ -1,8 +1,7 @@
 const menuRouter = require("express").Router();
-const { verifyToken } = require("../middleware/loginMiddleware");
 
 const { getMenuTreeByRoleId } = require("../controllers/menuController");
 
-menuRouter.get("/tree", verifyToken, getMenuTreeByRoleId);
+menuRouter.get("/menu/:id", getMenuTreeByRoleId);
 
 module.exports = menuRouter;
