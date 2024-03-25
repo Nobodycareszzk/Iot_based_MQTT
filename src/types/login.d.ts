@@ -3,7 +3,7 @@ export interface userAccount {
   password: string
 }
 
-interface ChildMenuType {
+export interface ChildMenuType {
   id: number
   name: string
   type: number
@@ -14,7 +14,7 @@ interface ChildMenuType {
   parentId: number
 }
 
-interface RootMenuType {
+export interface RootMenuType {
   id: number
   name: string
   type: number

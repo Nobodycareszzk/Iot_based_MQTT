@@ -32,7 +32,7 @@ export function getRoutesByMenu(userMenus: RootMenuType[]) {
  * @param path 需要匹配的路径
  * @param userMenus 所有的菜单
  */
-export function getShowMenuByPath(path: string, userMenus: any[]) {
+export function getShowMenuByPath(path: string, userMenus: RootMenuType[]) {
   // console.log('path:', path)
   // console.log('userMenus:', JSON.parse(JSON.stringify(userMenus)))
   for (const menu of userMenus) {
@@ -48,7 +48,7 @@ interface IBreadcrumbs {
   name: string
   path?: string
 }
-export function mapPathToBreadcrumbs(path: string, userMenus: any[]) {
+export function mapPathToBreadcrumbs(path: string, userMenus: RootMenuType[]) {
   // 1.定义面包屑
   const breadcrumbs: IBreadcrumbs[] = []
 
