@@ -12,9 +12,9 @@ const { showData } = require("../service/dataService");
 
 async function getDeviceListInfo(req, res, next) {
   const userId = res.locals.user.id;
-  const { page = "1", pageSize = "10" } = req.query;
+  const { page = "1", pageSize = "10", deviceFormData = {} } = req.body;
   try {
-    const result = await getDeviceList(userId, page, pageSize);
+    const result = await getDeviceList(userId, page, pageSize, deviceFormData);
     const data = { devices: result, total: result.length };
     res.json(createResBody(2000, "获取成功", data));
   } catch (error) {

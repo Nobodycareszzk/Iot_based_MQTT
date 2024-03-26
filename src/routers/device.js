@@ -16,7 +16,7 @@ const deviceRouter = express.Router();
 
 const deviceMiddleware = [verifyToken, hasDevice];
 
-deviceRouter.get("/query/list", verifyToken, getDeviceListInfo);
+deviceRouter.post("/query/list", verifyToken, getDeviceListInfo);
 deviceRouter.post("/create", verifyToken, addDeviceByName);
 deviceRouter.get("/query/:deviceId", deviceMiddleware, getDeviceInfoById);
 deviceRouter.delete("/delete/:deviceId", deviceMiddleware, deleteDeviceInfoById);

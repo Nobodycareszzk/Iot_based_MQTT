@@ -36,22 +36,50 @@ async function addDevice(userId, deviceName, deviceType) {
  * @param {*} userId
  * @returns
  */
-async function getDeviceList(userId, page, pageSize) {
+async function getDeviceList(userId, page, pageSize, formData) {
   const startIndex = (page - 1) * pageSize;
+  const values = [userId];
+  console.log("formData", formData);
+  let statement = `
+    SELECT device.*, device_product.*
+    FROM device
+    INNER JOIN device_product ON device.deviceId = device_product.deviceId
+    WHERE device.deviceId IN (
+      SELECT deviceId
+      FROM user_device
+      WHERE userId = ?
+    )
+  `;
 
-  const statement = `SELECT device.*, device_product.*
-  FROM device
-  INNER JOIN device_product ON device.deviceId = device_product.deviceId
-  WHERE device.deviceId IN (
-    SELECT deviceId
-    FROM user_device
-    WHERE userId = ?
-  )
-  LIMIT ?, ?;
-`;
+  // 构建可选条件
+  if (formData) {
+    if (formData.deviceName) {
+      statement += ` AND device.deviceName LIKE ?`;
+      values.push(`%${formData.deviceName}%`);
+    }
+    if (formData.createAt) {
+      statement += ` AND device.createAt >= ? AND device.createAt <= ?`;
+      values.push(formData.createAt[0], formData.createAt[1]);
+    }
+    if (formData.deviceType) {
+      statement += ` AND device.deviceType = ?`;
+      values.push(formData.deviceType);
+    }
+    if (formData.status) {
+      statement += ` AND device.status = ?`;
+      values.push(formData.status);
+    }
+    if (formData.productId) {
+      statement += ` AND device_product.productId = ?`;
+      values.push(formData.productId);
+    }
+  }
 
+  statement += ` LIMIT ?, ?`;
+  values.push(String(startIndex), pageSize);
+  console.log("values", values);
   try {
-    const [result] = await connection.execute(statement, [userId, String(startIndex), pageSize]);
+    const [result] = await connection.execute(statement, values);
     return result;
   } catch (error) {
     console.error("Error fetching devices:", error);

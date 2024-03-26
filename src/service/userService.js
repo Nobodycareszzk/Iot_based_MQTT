@@ -4,7 +4,6 @@ const connection = require("../utils/databaseConnect");
 async function addUser(username, password, phone, email) {
   const statementUser = "INSERT INTO user (username, password, phone, email) VALUES (?, ?, ?, ?)";
   const statementRole = "INSERT INTO user_role (userId, roleId) VALUES (?, ?)";
-  const statementPermission = "INSERT INTO role_permission (roleId, permissionName) VALUES (?, ?)";
   try {
     // 执行预处理语句添加用户
     const [resultUser] = await connection.execute(statementUser, [username, password, phone, email]);
@@ -56,11 +55,11 @@ async function updateUserInfo(username, password, phone, email) {
 }
 
 // 删除用户的函数
-async function deleteUser(username) {
-  const statement = "DELETE FROM user WHERE username = ?";
+async function deleteUser(id) {
+  const statement = "DELETE FROM user WHERE id = ?";
   try {
     // 执行预处理语句删除用户
-    const [result] = await connection.execute(statement, [username]);
+    const [result] = await connection.execute(statement, [id]);
     if (result.affectedRows === 0) {
       return -1;
     }
