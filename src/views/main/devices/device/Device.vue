@@ -1,10 +1,12 @@
 <template>
   <div class="device">
-    <h2>device</h2>
+    <DeviceSearch />
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import DeviceSearch from './c-cpns/DeviceSearch.vue'
+</script>
 
 <style scoped lang="less">
 .device {

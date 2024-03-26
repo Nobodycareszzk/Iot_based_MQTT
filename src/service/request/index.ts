@@ -14,6 +14,7 @@ class MyRequest {
       (config: InternalAxiosRequestConfig) => {
         // loading/token
         console.log('全局请求成功拦截')
+        console.log('config', config)
         return config
       },
       (error: AxiosError) => {
@@ -27,6 +28,7 @@ class MyRequest {
       (res: AxiosResponse) => {
         console.log('全局响应成功的拦截')
         const { data } = res
+        console.log('响应对象:', res)
         // 处理res.code
         return data
       },
