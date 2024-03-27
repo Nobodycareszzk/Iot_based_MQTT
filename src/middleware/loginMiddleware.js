@@ -13,18 +13,30 @@ const verifyLogin = async (req, res, next) => {
     res.json(createResBody(-1001, "用户名或密码不能为空"));
     return;
   }
-  // 2.判断name是否在数据库中已经存在 数据库查询返回的是数组
-  const [user] = await userService.getUserByUsername(username);
-  console.log("验证登录数据库查询返回:", user);
-  if (!user) {
-    res.json(createResBody(-1002, "该用户名不存在"));
-    return;
+  try {
+    // 2.判断name是否在数据库中已经存在 数据库查询返回的是数组
+    const [user] = await userService.getUserByUsername(username);
+    console.log("验证登录数据库查询返回:", user);
+    if (!user) {
+      throw new Error("该用户名不存在");
+    }
+    if (user.password !== password) {
+      throw new Error("密码错误");
+      res.json(createResBody(-1003, "密码错误,请重新输入"));
+      return;
+    }
+    res.locals.user = user;
+  } catch (err) {
+    if (err.message === "密码错误") {
+      res.json(createResBody(-1003, "密码错误,请重新输入"));
+      return;
+    }
+    if (err.message === "该用户名不存在") {
+      res.json(createResBody(-1002, "该用户名不存在"));
+      return;
+    }
   }
-  if (user.password !== password) {
-    res.json(createResBody(-1003, "密码错误,请重新输入"));
-    return;
-  }
-  res.locals.user = user;
+
   next();
 };
 

@@ -123,10 +123,17 @@ async function deleteDevice(userId, deviceId) {
     // 删除 user_device 表中的记录
     const deleteStatement = "DELETE FROM user_device WHERE userId = ? AND deviceId = ?";
     const [resultUserDevice] = await connection.execute(deleteStatement, [userId, deviceId]);
+    // 删除 device_product 表中的记录
+    const deleteProductStatement = "DELETE FROM device_product WHERE deviceId = ?";
+    const [resultProductDevice] = await connection.execute(deleteProductStatement, [deviceId]);
     // 删除 device 表中的记录
     const deleteDeviceStatement = "DELETE FROM device WHERE deviceId = ?";
     const [resultDevice] = await connection.execute(deleteDeviceStatement, [deviceId]);
-    if (resultUserDevice.affectedRows === 0 || resultDevice.affectedRows === 0) {
+    if (
+      resultUserDevice.affectedRows === 0 ||
+      resultDevice.affectedRows === 0 ||
+      resultProductDevice.affectedRows === 0
+    ) {
       return new Error("Device delete failed");
     }
   } catch (error) {

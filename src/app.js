@@ -7,6 +7,7 @@ const groupRouter = require("./routers/group");
 const communicateRouter = require("./routers/communicate");
 const menuRouter = require("./routers/menu");
 const permissionRouter = require("./routers/permission");
+const productRouter = require("./routers/product");
 // 导入的时候所有代码都会被执行一次
 // require("./broker/broker");
 // require("./client/client");
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(loginRouter);
 app.use("/user", userRouter);
 app.use("/device", deviceRouter);
+app.use("/product", productRouter);
 app.use(menuRouter);
 app.use(permissionRouter);
 // app.use("/topic", topicRouter);

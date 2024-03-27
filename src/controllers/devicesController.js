@@ -23,12 +23,14 @@ async function getDeviceListInfo(req, res, next) {
 }
 
 async function addDeviceByName(req, res, next) {
-  const { deviceName, deviceType } = req.body;
+  console.log("addDeviceByName", req.body);
+  const { deviceName, deviceType, productId } = req.body;
   const userId = res.locals.user.id;
   try {
-    const result = await addDevice(userId, deviceName, deviceType);
-    console.log("addDeviceInfo", result);
-    const data = { deviceId: result };
+    const newDeviceId = await addDevice(userId, deviceName, deviceType);
+    await selectProduct(newDeviceId, productId);
+    console.log("addDeviceInfo", newDeviceId);
+    const data = { deviceId: newDeviceId };
     res.json(createResBody(2000, "添加成功", data));
   } catch (error) {
     res.json(createResBody(-2003, "添加失败", error));
@@ -62,6 +64,7 @@ async function deleteDeviceInfoById(req, res, next) {
 }
 
 async function updateDeviceInfoById(req, res, next) {
+  console.log("updateDeviceInfoById", req.body);
   const { deviceId, deviceName, deviceType } = req.body;
 
   try {
