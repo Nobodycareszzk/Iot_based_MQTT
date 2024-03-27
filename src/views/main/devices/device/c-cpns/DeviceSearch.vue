@@ -1,31 +1,27 @@
 <template>
   <div class="search">
     <!-- 1.输入搜索关键字的表单 -->
-    <el-form :model="searchForm" ref="formRef" label-width="80px" size="large">
+    <el-form :model="formData" ref="formRef" label-width="80px" size="large">
       <el-row :gutter="20">
         <el-col :span="8">
           <el-form-item label="设备名称" prop="deviceName">
-            <el-input v-model="searchForm.deviceName" placeholder="请输入查询的设备名称" />
+            <el-input v-model="formData.deviceName" placeholder="请输入查询的设备名称" />
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="设备类型" prop="deviceType">
-            <el-input v-model="searchForm.deviceType" placeholder="请输入查询的设备类型" />
+            <el-input v-model="formData.deviceType" placeholder="请输入查询的设备类型" />
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="产品类型" prop="productId">
-            <el-input v-model="searchForm.productId" placeholder="请输入查询的产品类型" />
+            <el-input v-model="formData.productId" placeholder="请输入查询的产品类型" />
           </el-form-item>
         </el-col>
 
         <el-col :span="8">
           <el-form-item label="状态" prop="status">
-            <el-select
-              v-model="searchForm.status"
-              placeholder="请选择查询的状态"
-              style="width: 100%"
-            >
+            <el-select v-model="formData.status" placeholder="请选择查询的状态" style="width: 100%">
               <el-option label="启用" :value="1" />
               <el-option label="禁用" :value="0" />
             </el-select>
@@ -34,7 +30,7 @@
         <el-col :span="8">
           <el-form-item label="创建时间" prop="createAt">
             <el-date-picker
-              v-model="searchForm.createAt"
+              v-model="formData.createAt"
               type="daterange"
               range-separator="-"
               start-placeholder="开始时间"
@@ -56,13 +52,13 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import type { ElForm } from 'element-plus'
-import type { DeviceFormData } from '@/types'
+import type { DeviceQueryForm } from '@/types'
 
 // 定义自定义事件
 const emit = defineEmits(['queryClick', 'resetClick'])
 
 // 定义form的数据
-const searchForm = reactive<DeviceFormData>({
+const formData = reactive<DeviceQueryForm>({
   deviceName: '',
   deviceType: '',
   status: '',
@@ -81,7 +77,7 @@ function handleResetClick() {
 }
 
 function handleQueryClick() {
-  emit('queryClick', searchForm)
+  emit('queryClick', formData)
 }
 </script>
 

@@ -3,6 +3,7 @@ import { userLoginByAccount, getUserMenus, getUserPermission } from '@/service/l
 import type { userAccount, RootMenuType, PermissionType } from '@/types'
 import router from '@/router'
 import { getRoutesByMenu } from '@/utils/map-menus'
+import useProductStore from '../main/devices/product'
 
 import { localCache } from '@/utils/cache'
 
@@ -28,7 +29,7 @@ const useLoginStore = defineStore('login', {
   actions: {
     async accountLoginAction(account: userAccount) {
       const loginResult = await userLoginByAccount(account)
-
+      // token这些可以放在axios拦截器中处理
       const { id, name, accessToken, refreshToken } = loginResult.data
       this.userInfo.id = id
       this.userInfo.name = name
@@ -50,15 +51,25 @@ const useLoginStore = defineStore('login', {
         return item
       })
 
+      // 获取用户菜单
       this.userInfo.menu = modifiedMenuResult
-      console.log('modifiedMenuResult:', modifiedMenuResult)
-      console.log('store/menuResult:', menuResult)
       const permissionResult = await getUserPermission(id)
+
+      // 获取用户权限
       this.userInfo.permission = permissionResult.data.permissions
+
+      // 获取当前所有产品列表的请求
+      const productStore = useProductStore()
+      productStore.getProductListAction()
+
       // 本地缓存
       localCache.setCache('accessToken', this.accessToken)
       localCache.setCache('refreshToken', this.refreshToken)
       localCache.setCache('userInfo', this.userInfo)
+      // 本地缓存产品列表信息
+      console.log('productStore.productList:', productStore.productList)
+      localCache.setCache('productList', productStore.productList)
+      localCache.setCache('productTotal', productStore.total)
 
       // 动态添加路由
       const userRoutes = getRoutesByMenu(this.userInfo.menu)
@@ -79,6 +90,7 @@ const useLoginStore = defineStore('login', {
         this.userInfo = userInfo
         this.refreshToken = refreshToken
       }
+
       // 动态添加路由
       const userRoutes = getRoutesByMenu(this.userInfo.menu)
       userRoutes.forEach((route) => {

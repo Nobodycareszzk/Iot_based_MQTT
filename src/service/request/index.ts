@@ -18,7 +18,7 @@ class MyRequest {
         return config
       },
       (error: AxiosError) => {
-        console.log('全局请求失败的拦截', error)
+        // console.log('全局请求失败的拦截', error)
         return Promise.reject(error)
       }
     )
@@ -26,14 +26,14 @@ class MyRequest {
     // 响应拦截
     this.instance.interceptors.response.use(
       (res: AxiosResponse) => {
-        console.log('全局响应成功的拦截')
+        // console.log('全局响应成功的拦截')
         const { data } = res
-        console.log('响应对象:', res)
+        // console.log('响应对象:', res)
         // 处理res.code
         return data
       },
       (error: AxiosError) => {
-        console.log('全局响应失败的拦截', error)
+        // console.log('全局响应失败的拦截', error)
         // const { message } = error
         // 根据message 和status处理错误
         // this.handleErrorMessage(message)

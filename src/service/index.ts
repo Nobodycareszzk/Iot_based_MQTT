@@ -11,7 +11,7 @@ const myRequest = new MyRequest({
       const token = localCache.getCache('accessToken')
       console.log('requestSuccessFn', token)
       if (config.headers && token) {
-        config.headers.Authorization = 'Bearer' + token
+        config.headers.Authorization = 'Bearer ' + token
       }
       return config
     }

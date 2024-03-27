@@ -67,7 +67,6 @@ function handleItemClick(submenu: ChildMenuType) {
 // 3.设置默认激活的菜单
 const route = useRoute()
 const defaultActive = computed(() => {
-  console.log(route.path)
   const pathMenu = getShowMenuByPath(route.path, userMenus)
   return pathMenu.id + ''
 })
