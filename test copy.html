@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+
+      html,
+      body,
+      .room {
+        height: 100%;
+        width: 100%;
+      }
+
+      .room {
+        display: flex;
+      }
+
+      .left {
+        width: 300px;
+        border-right: 0.5px solid #f5f5f5;
+        background: #333;
+      }
+
+      .right {
+        background: #1c1c1c;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        background: #8d0eb0;
+        color: white;
+        padding: 10px;
+        box-sizing: border-box;
+        font-size: 20px;
+      }
+
+      .main {
+        flex: 1;
+        padding: 10px;
+        box-sizing: border-box;
+        font-size: 20px;
+        overflow: auto;
+      }
+
+      .main-chat {
+        color: green;
+      }
+
+      .footer {
+        min-height: 200px;
+        border-top: 1px solid green;
+      }
+
+      .footer .ipt {
+        width: 100%;
+        height: 100%;
+        color: green;
+        outline: none;
+        font-size: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+
+      .groupList {
+        height: 100%;
+        overflow: auto;
+      }
+
+      .groupList-items {
+        height: 50px;
+        width: 100%;
+        background: #131313;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+      }
+    </style>
+  </head>
+  <div class="room">
+    <div class="left">
+      <div class="groupList"></div>
+    </div>
+    <div class="right">
+      <header class="header">聊天室</header>
+      <main class="main"></main>
+      <footer class="footer">
+        <div class="ipt" contenteditable></div>
+      </footer>
+    </div>
+  </div>
+
+  <body>
+    <script
+      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+      integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const socket = io('http://localhost:3000') // 使用完整的 URL
+
+      // 发送创建命名空间的请求
+      socket.emit('createNamespace', '/myNamespace2')
+
+      // const orderSocket = io(`https://example.com/${namespaceName}`)
+      // 监听服务器的响应
+      socket.on('connect', () => {
+        console.log('已连接至服务器')
+        socket.on('namespaceCreated_socket', handleNamespaceEvent)
+        socket.on('namespaceExists', handleNamespaceEvent)
+      })
+
+      // 监听服务器断开连接事件
+      socket.on('disconnect', () => {
+        console.log('与服务器的连接已断开')
+        // 执行其他清理操作，如释放资源等
+      })
+      function handleNamespaceEvent(namespaceName) {
+        console.log(`命名空间 ${namespaceName} 已创建或已存在`)
+        // 连接到命名空间
+        const namespaceSocket = io(`http://localhost:3000${namespaceName}`)
+        namespaceSocket.on('connect', () => {
+          console.log(`已连接至命名空间 ${namespaceName}`)
+          // 添加对 intervalMessage 事件的监听
+          namespaceSocket.on('intervalMessage', (msg) => {
+            console.log(msg)
+          })
+        })
+      }
+    </script>
+  </body>
+</html>
