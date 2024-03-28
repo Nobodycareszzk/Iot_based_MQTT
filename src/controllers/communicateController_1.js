@@ -1,6 +1,7 @@
 const userClient = require("mqtt").connect("mqtt://localhost:9000", {
   clientId: "userClient",
 });
+var count = 0;
 
 async function controlDevcie(req, res, next) {
   const { userId, deviceId, message } = req.body;
@@ -9,7 +10,8 @@ async function controlDevcie(req, res, next) {
   function messageListener(topic, receivedMessage) {
     if (topic === `subscribe/${userId}/${deviceId}`) {
       console.log("Service 收到信息", receivedMessage.toString());
-
+      count++;
+      console.log("count", count);
       // 发送 HTTP 响应
       res.json({
         code: 200,
